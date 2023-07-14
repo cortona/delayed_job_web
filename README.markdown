@@ -25,7 +25,7 @@ Quick Start For Rails 3 and 4 Applications
 Add the dependency to your Gemfile
 
 ```ruby
-gem "delayed_job_web"
+gem "delayed_job_web", git: 'https://github.com/cortona/delayed_job_web.git'
 ```
 
 Install it...

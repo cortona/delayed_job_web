@@ -167,18 +167,28 @@ class DelayedJobWeb < Sinatra::Base
     rel =
       case type
       when :working
-        rel.where('locked_at IS NOT NULL AND failed_at IS NULL')
+        rel.where(:locked_at.ne => nil, failed_at: nil)
       when :failed
-        rel.where('last_error IS NOT NULL')
+        rel.where(:last_error.ne => nil)
       when :pending
         rel.where(:attempts => 0, :locked_at => nil)
       else
         rel
       end
 
-    rel = rel.where(:queue => queues) unless queues.empty?
+    rel = rel.where(:queue.in => queues) unless queues.empty?
 
     rel
+  end
+
+  def grouped_delayed_jobs
+    Delayed::Job.collection.aggregate(
+      [
+        { :$group => { _id: "queue", count: { :$sum => 1 } } },
+        { :$sort => { count: -1 } }
+
+      ]
+    ).map { |hash| [hash['_id'], hash['count']] }.to_h
   end
 
   get "/?" do

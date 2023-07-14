@@ -49,7 +49,7 @@
     <th>Count</th>
   </tr>
 
-  <% delayed_jobs(nil).group(:queue).size.each do |queue, count| %>
+  <% grouped_delayed_jobs.each do |queue, count| %>
     <tr>
       <td class="status">
         <a href="<%= queue_path(queue) %>">
